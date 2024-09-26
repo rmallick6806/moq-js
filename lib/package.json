@@ -7,10 +7,9 @@
 	"repository": "github:rmallick6806/moq-js",
 	"main": "./dist/moq-ts.es.js",
 	"scripts": {
-		"build": "tsc -b && cp ../LICENSE* ./dist && cp ./README.md ./dist && cp ./package.json ./dist",
+		"build": "tsc -b && vite build",
 		"lint": "eslint .",
-		"fmt": "prettier --write .",
-		"build2": "tsc -b && vite build"
+		"fmt": "prettier --write ."
 	},
 	"devDependencies": {
 		"@types/audioworklet": "^0.0.50",
