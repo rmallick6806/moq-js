@@ -2,7 +2,6 @@
 
 import * as Message from "./worker/message"
 import { Root, isAudioTrack } from "../media/catalog"
-import { GroupHeader } from "../transport/objects"
 import { RingShared } from "../common/ring"
 import type { Audio } from "./audio"
 
