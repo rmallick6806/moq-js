@@ -1,15 +1,19 @@
 {
 	"name": "@rmallick6806/moq-ts",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Media over QUIC library",
 	"license": "(MIT OR Apache-2.0)",
 	"repository": "github:rmallick6806/moq-js",
-	"main": "./playback/index.ts",
+	"main": "./dist/moq-ts.es.js",
+	"files": [
+		"dist"
+	],
 	"scripts": {
-		"build": "tsc -b && cp ../LICENSE* ./dist && cp ./README.md ./dist && cp ./package.json ./dist",
+		"build": "tsc -b && vite build",
 		"lint": "eslint .",
-		"fmt": "prettier --write ."
+		"fmt": "prettier --write .",
+		"release": "npm run build && npm publish"
 	},
 	"devDependencies": {
 		"@types/audioworklet": "^0.0.50",
