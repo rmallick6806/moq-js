@@ -1,11 +1,14 @@
 {
 	"name": "@rmallick6806/moq-ts",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Media over QUIC library",
 	"license": "(MIT OR Apache-2.0)",
 	"repository": "github:rmallick6806/moq-js",
 	"main": "./dist/moq-ts.es.js",
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",
