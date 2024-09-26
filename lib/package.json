@@ -12,7 +12,8 @@
 	"scripts": {
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",
-		"fmt": "prettier --write ."
+		"fmt": "prettier --write .",
+		"release": "npm run build && npm publish"
 	},
 	"devDependencies": {
 		"@types/audioworklet": "^0.0.50",
