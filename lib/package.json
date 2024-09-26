@@ -1,10 +1,11 @@
 {
-	"name": "@kixelated/moq",
+	"name": "@rmallick6806/moq-ts",
 	"type": "module",
-	"version": "0.1.4",
+	"version": "0.0.1",
 	"description": "Media over QUIC library",
 	"license": "(MIT OR Apache-2.0)",
-	"repository": "github:kixelated/moq-js",
+	"repository": "github:rmallick6806/moq-js",
+	"main": "./playback/index.ts",
 	"scripts": {
 		"build": "tsc -b && cp ../LICENSE* ./dist && cp ./README.md ./dist && cp ./package.json ./dist",
 		"lint": "eslint .",
