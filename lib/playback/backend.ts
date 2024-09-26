@@ -3,7 +3,7 @@
 import * as Message from "./worker/message"
 import { Root, isAudioTrack } from "../media/catalog"
 import { RingShared } from "../common/ring"
-import type { Audio } from "./audio"
+import MediaWorker from "./worker/index?worker&inline"
 
 export interface PlayerConfig {
 	canvas: OffscreenCanvas
@@ -15,15 +15,10 @@ export default class Backend {
 	// General worker
 	#worker: Worker
 
-	// The audio context, which must be created on the main thread.
-	#audio?: Audio
-
 	constructor(config: PlayerConfig) {
 		// TODO does this block the main thread? If so, make this async
-		this.#worker = new Worker(new URL("worker/index.ts", import.meta.url), {
-			type: "module",
-			name: "media",
-		})
+		// @ts-expect-error: The Vite typing is wrong https://github.com/vitejs/vite/blob/22bd67d70a1390daae19ca33d7de162140d533d6/packages/vite/client.d.ts#L182
+		this.#worker = new MediaWorker({ format: "es" })
 
 		let sampleRate: number | undefined
 		let channels: number | undefined
@@ -48,7 +43,6 @@ export default class Backend {
 				sampleRate: sampleRate,
 				ring: new RingShared(2, sampleRate / 10), // 100ms
 			}
-			this.loadAudio().then((module) => (this.#audio = new module.Audio(msg.audio as Message.ConfigAudio)))
 		}
 
 		// TODO only send the canvas if we have a video track
@@ -59,13 +53,7 @@ export default class Backend {
 		this.send({ config: msg }, msg.video.canvas)
 	}
 
-	async loadAudio(): Promise<typeof import("./audio")> {
-		return await import("./audio")
-	}
-
-	async play() {
-		await this.#audio?.context.resume()
-	}
+	async play() {}
 
 	init(init: Init) {
 		this.send({ init })
@@ -77,7 +65,6 @@ export default class Backend {
 
 	async close() {
 		this.#worker.terminate()
-		await this.#audio?.context.close()
 	}
 
 	// Enforce we're sending valid types to the worker
