@@ -9,5 +9,4 @@ export default defineConfig({
 			fileName: (format) => `moq-ts.${format}.js`,
 		},
 	},
-	plugins: [dtsPlugin()],
 })
