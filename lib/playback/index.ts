@@ -56,6 +56,7 @@ export class Player {
 			fingerprint,
 			role: "subscriber",
 		})
+		console.log("starting")
 		const connection = await client.connect()
 		const catalog = await Catalog.fetch(connection, namespace)
 		const canvas = config.canvas.transferControlToOffscreen()

@@ -7,7 +7,10 @@ export class Renderer {
 	#timeline: Component
 
 	#decoder!: VideoDecoder
-	#queue: TransformStream<Frame, VideoFrame>
+	#queue: TransformStream
+	// NEW: Added properties to track and limit queue size
+	#queueSize: number = 0
+	#maxQueueSize: number = 16
 
 	constructor(config: Message.ConfigVideo, timeline: Component) {
 		this.#canvas = config.canvas
@@ -26,15 +29,14 @@ export class Renderer {
 		for (;;) {
 			const { value: frame, done } = await reader.read()
 			if (done) break
-
 			self.requestAnimationFrame(() => {
 				this.#canvas.width = frame.displayWidth
 				this.#canvas.height = frame.displayHeight
-
 				const ctx = this.#canvas.getContext("2d")
 				if (!ctx) throw new Error("failed to get canvas context")
 
-				ctx.drawImage(frame, 0, 0, frame.displayWidth, frame.displayHeight) // TODO respect aspect ratio
+				ctx.drawImage(frame, 0, 0, frame.displayWidth, frame.displayHeight)
+				this.#decreaseQueueSize() // NEW: Decrease queue size after processing a frame
 				frame.close()
 			})
 		}
@@ -43,14 +45,21 @@ export class Renderer {
 	#start(controller: TransformStreamDefaultController<VideoFrame>) {
 		this.#decoder = new VideoDecoder({
 			output: (frame: VideoFrame) => {
-				controller.enqueue(frame)
+				// MODIFIED: Check queue size before enqueueing
+				if (this.#queueSize < this.#maxQueueSize) {
+					controller.enqueue(frame)
+					this.#queueSize++
+				} else {
+					// NEW: Drop frame if queue is full
+					console.warn("Queue full, dropping frame")
+					frame.close()
+				}
 			},
 			error: console.error,
 		})
 	}
 
 	#transform(frame: Frame) {
-		// Configure the decoder with the first frame
 		if (this.#decoder.state !== "configured") {
 			const { sample, track } = frame
 
@@ -60,7 +69,7 @@ export class Renderer {
 
 			const buffer = new MP4.Stream(undefined, 0, MP4.Stream.BIG_ENDIAN)
 			box.write(buffer)
-			const description = new Uint8Array(buffer.buffer, 8) // Remove the box header.
+			const description = new Uint8Array(buffer.buffer, 8)
 
 			if (!MP4.isVideoTrack(track)) throw new Error("expected video track")
 
@@ -80,5 +89,12 @@ export class Renderer {
 		})
 
 		this.#decoder.decode(chunk)
+	}
+
+	// NEW: Method to decrease queue size
+	#decreaseQueueSize() {
+		if (this.#queueSize > 0) {
+			this.#queueSize--
+		}
 	}
 }
