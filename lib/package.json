@@ -1,7 +1,7 @@
 {
 	"name": "@rmallick6806/moq-ts",
 	"type": "module",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Media over QUIC library",
 	"license": "(MIT OR Apache-2.0)",
 	"repository": "github:rmallick6806/moq-js",
